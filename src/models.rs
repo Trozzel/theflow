@@ -15,7 +15,7 @@ pub struct Context {
 }
 
 #[derive(Queryable, Selectable)]
-#[diesel(table_name = crate::schema::contexts)]
+#[diesel(table_name = crate::schema::folders)]
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
 pub struct Folder {
 	pub unique_id: i64,
@@ -28,7 +28,7 @@ pub struct Folder {
 }
 
 #[derive(Queryable, Selectable)]
-#[diesel(table_name = crate::schema::contexts)]
+#[diesel(table_name = crate::schema::projects)]
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
 pub struct Project {
 	pub unique_id: i64,
@@ -52,7 +52,7 @@ pub struct Project {
 }
 
 #[derive(Queryable, Selectable)]
-#[diesel(table_name = crate::schema::contexts)]
+#[diesel(table_name = crate::schema::tasks)]
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
 pub struct Task {
 	pub unique_id: i64,
@@ -75,11 +75,11 @@ pub struct Task {
 
 // ADDING NEW RECORDS TO TABLES
 /******************************************************************************/
-use theflow::schema::*;
+use crate::schema::*;
 
 // NEW POSTS
 #[derive(Insertable)]
-#[derive(table_name = contexts)]
+#[diesel(table_name = contexts)]
 pub struct NewContext<'a> {
     pub name: &'a str,
     pub parent_id: Option<i64>,
