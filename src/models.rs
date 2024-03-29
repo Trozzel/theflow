@@ -73,16 +73,16 @@ pub struct Task {
     pub task_type: String,
 }
 
-// ADDING NEW RECORDS TO TABLES
+// Insertable Structs - Mapping struct columns in database
 /******************************************************************************/
 use crate::schema::*;
 
 // NEW POSTS
 #[derive(Insertable)]
 #[diesel(table_name = contexts)]
-pub struct NewContext<'a> {
+pub struct ContextForm<'a> {
     pub name: &'a str,
     pub parent_id: Option<i64>,
-    pub status: &'a str,
+    pub status: Option<&'a str>, // Default = "Active"
     pub notes: Option<&'a str>,
 }
