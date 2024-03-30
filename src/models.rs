@@ -77,7 +77,8 @@ pub struct Task {
 /******************************************************************************/
 use crate::schema::*;
 
-// NEW POSTS
+// ContextForm
+/******************************************************************************/
 #[derive(Insertable)]
 #[diesel(table_name = contexts)]
 pub struct ContextForm<'a> {
@@ -86,3 +87,57 @@ pub struct ContextForm<'a> {
     pub status: Option<&'a str>, // Default = "Active"
     pub notes: Option<&'a str>,
 }
+
+// FolderForm
+/******************************************************************************/
+#[derive(Insertable)]
+#[diesel(table_name = folders)]
+pub struct FolderForm<'a> {
+    pub name: &'a str,
+    pub parent_id: Option<i64>,
+    pub status: Option<&'a str>, // Default = "Active"
+    pub notes: Option<&'a str>,
+}
+
+// ProjectForm
+/******************************************************************************/
+#[derive(Insertable)]
+#[diesel(table_name = projects)]
+pub struct ProjectForm<'a> {
+    pub name: &'a str,
+    pub parent_id: Option<i64>,
+    pub status: Option<&'a str>, // Default = "Active"
+    pub notes: Option<&'a str>,
+    pub context_id: Option<i64>,
+    pub folder_id: Option<i64>,
+    pub flagged: bool,
+    pub deferred: Option<NaiveDateTime>,
+    pub due: Option<NaiveDateTime>,
+    pub is_repeating: bool,
+    pub repeat_from: &'a str,
+    pub repeat_schedule: &'a str,
+    pub complete_with_last: bool,
+    pub review_schedule: &'a str,
+    pub project_type: &'a str,
+}
+
+// TasksForm
+/******************************************************************************/
+#[derive(Insertable)]
+#[diesel(table_name = tasks)]
+pub struct TaskForm<'a> {
+    pub name: &'a str,
+    pub parent_id: Option<i64>,
+    pub status: Option<&'a str>, // Default = "Active"
+    pub notes: Option<&'a str>,
+    pub context_id: Option<i64>,
+    pub project_id: Option<i64>,
+    pub flagged: bool,
+    pub deferred: Option<NaiveDateTime>,
+    pub due: Option<NaiveDateTime>,
+    pub is_repeating: bool,
+    pub repeat_from: &'a str,
+    pub repeat_schedule: &'a str,
+    pub task_type: &'a str,
+}
+
