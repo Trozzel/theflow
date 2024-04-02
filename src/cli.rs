@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-use diesel::QueryResult;
-use crate::establish_connection;
 use crate::crudops::insert_context;
+use crate::establish_connection;
+use diesel::QueryResult;
+use std::collections::HashMap;
 
 use crate::helpers::*;
 
@@ -16,21 +16,29 @@ pub struct TableCrudCli<'a> {
 
 // Implementation methods
 impl<'a> TableCrudCli<'a> {
-    pub fn new(table: &'a str,
-               crud_op: &'a str,
-               col_to_vals: HashMap<String, String>) -> TableCrudCli<'a> 
-    {
-        TableCrudCli{ table, crud_op, col_to_vals }
+    pub fn new(
+        table: &'a str,
+        crud_op: &'a str,
+        col_to_vals: HashMap<String, String>,
+    ) -> TableCrudCli<'a> {
+        TableCrudCli {
+            table,
+            crud_op,
+            col_to_vals,
+        }
     }
 
     pub fn display(&self) {
-        println!("Your command: {} {} {:?}", &self.table, &self.crud_op, &self.col_to_vals);
+        println!(
+            "Your command: {} {} {:?}",
+            &self.table, &self.crud_op, &self.col_to_vals
+        );
     }
 }
 
 // MAIN CLI
 /******************************************************************************/
-pub fn get_table_crud_cli<'a>(args: &'a Vec<String>)  -> TableCrudCli {
+pub fn get_table_crud_cli<'a>(args: &'a Vec<String>) -> TableCrudCli {
     // 1. Verify table name
     let table: &str = &args[1];
     if !TABLES.contains(&table) {
@@ -51,10 +59,10 @@ pub fn get_table_crud_cli<'a>(args: &'a Vec<String>)  -> TableCrudCli {
         "insert" => {
             assert!(col_to_vals.len() % 2 == 0);
             get_hashmap(&col_to_vals)
-        },
+        }
         _ => {
             panic!("'{}' is not a valid table", table);
-        },
+        }
     };
 
     TableCrudCli::new(table, crud_op, col_val_map)
@@ -73,8 +81,7 @@ fn get_hashmap<'a>(cols_vals: &'a [String]) -> HashMap<String, String> {
             assert!(arg.starts_with("--"));
             is_column = false;
             cols.push(&arg[2..]);
-        }
-        else {
+        } else {
             is_column = true;
             vals.push(&arg[..]);
         }
@@ -88,15 +95,56 @@ fn get_hashmap<'a>(cols_vals: &'a [String]) -> HashMap<String, String> {
 }
 
 // INSERT A CONTEXT
-pub fn insert<'a>(args: &'a Vec<String>) -> QueryResult<usize> {
+pub fn insert<'a>(args: &'a Vec<String>) -> Result<QueryResult<usize>, String> {
+    // Verify proper amount of arguments
+    if args.len() < 5 && args.len() % 2 == 0 {
+        return Err(String::from("Improper amount of arguments"));
+    }
+
+    // Verify valid table name
     let table: &str = &args[1];
-    assert!(TABLES.contains(&table));
+    if !TABLES.contains(&table) {
+        return Err(format!("Invalid table, '{}'", table));
+    }
 
+    // Verify valid CRUD operation
     let crud_op: &str = &args[2];
-    assert!(CRUD_OPS.contains(&crud_op));
-    
-    assert!(args[3].starts_with("--") && args[3].ends_with("name"));
-    let name: &str = &args[3][2..];
+    if !CRUD_OPS.contains(&crud_op) {
+        return Err(format!("Invalid CRUD operation, '{}'", crud_op));
+    }
 
-    insert_context(&mut establish_connection(), name, None, None, None)
+    // Verify first column name flag is --name
+    if !args[3].starts_with("--") && !args[3].ends_with("name") {
+        return Err(String::from("First flagged item must be '--name'"));
+    }
+
+    // Set parent_id, if present
+    let pid_idx = args.iter().position(|x| x == "--parent_id");
+    let parent_id: Option<&str> = match pid_idx {
+        Some(idx) => Some(&args[idx + 1][..]),
+        None => None,
+    };
+
+    let parent_id = match parent_id {
+        Some(numstr) => Some(numstr.parse::<i64>().expect("Not valid integer string")),
+        _ => None
+    };
+
+    // Set status, if present
+    let status_idx = args.iter().position(|x| x == "--status");
+    let status: Option<&str> = match status_idx {
+        Some(idx) => Some(&args[idx + 1][..]),
+        None => None,
+    };
+
+    // Read name
+    let name: &str = &args[4][..];
+
+    Ok(insert_context(
+        &mut establish_connection(),
+        name,
+        parent_id,
+        status,
+        None,
+    ))
 }
