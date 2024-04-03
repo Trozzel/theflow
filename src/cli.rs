@@ -30,8 +30,7 @@ impl<'a> TableCrudCli<'a> {
 
     pub fn display(&self) {
         println!(
-            "Your command: {} {} {:?}",
-            &self.table, &self.crud_op, &self.col_to_vals
+            "Your command: {} {} {:?}", &self.table, &self.crud_op, &self.col_to_vals
         );
     }
 }

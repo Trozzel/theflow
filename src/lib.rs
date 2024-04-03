@@ -1,3 +1,9 @@
+// ROOT
+#[macro_use]
+extern crate serde_derive;
+extern crate serde_json;
+extern crate serde;
+
 pub mod cli;
 pub mod models;
 pub mod schema;

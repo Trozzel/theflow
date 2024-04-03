@@ -79,7 +79,7 @@ use crate::schema::*;
 
 // ContextForm
 /******************************************************************************/
-#[derive(Insertable)]
+#[derive(Insertable, Serialize, Deserialize, Debug)]
 #[diesel(table_name = contexts)]
 pub struct ContextForm<'a> {
     pub name: &'a str,
@@ -90,7 +90,7 @@ pub struct ContextForm<'a> {
 
 // FolderForm
 /******************************************************************************/
-#[derive(Insertable)]
+#[derive(Insertable, Serialize, Deserialize, Debug)]
 #[diesel(table_name = folders)]
 pub struct FolderForm<'a> {
     pub name: &'a str,
@@ -101,7 +101,7 @@ pub struct FolderForm<'a> {
 
 // ProjectForm
 /******************************************************************************/
-#[derive(Insertable)]
+#[derive(Insertable, Serialize, Deserialize, Debug)]
 #[diesel(table_name = projects)]
 pub struct ProjectForm<'a> {
     pub name: &'a str,
@@ -123,7 +123,7 @@ pub struct ProjectForm<'a> {
 
 // TasksForm
 /******************************************************************************/
-#[derive(Insertable)]
+#[derive(Insertable, Serialize, Deserialize, Debug)]
 #[diesel(table_name = tasks)]
 pub struct TaskForm<'a> {
     pub name: &'a str,
