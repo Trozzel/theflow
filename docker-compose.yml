@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  db:
+    build:
+      context: ./db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: gford
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: theflow
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - theflow-net
+
+  backend:
+    build: ./backend
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://gford:secret@db:5432/theflow
+    networks:
+      - theflow-net
+
+volumes:
+  db_data:
+
+networks:
+  theflow-net:
